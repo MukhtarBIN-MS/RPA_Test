@@ -3,13 +3,23 @@ const fs = require('fs');
 
 (async () => {
   const browser = await puppeteer.launch({
-    headless: false, // Set to true for headless mode
+    headless: false, 
     defaultViewport: null,
     args: ['--start-maximized'],
+    timeout: 60000,
   });
 
   const page = await browser.newPage();
-  await page.goto('https://cloud.eais.go.kr/');
+  try {
+    await page.goto('https://cloud.eais.go.kr/', { timeout: 60000 }); 
+  } catch (error) {
+    if (error instanceof puppeteer.errors.TimeoutError) {
+      console.error('Navigation timeout occurred. Please check the website and your internet connection.');
+    } else {
+      console.error('An unexpected error occurred:', error);
+    }
+  }
+  
 
   // Input login credentials
   await page.type('input[name="id"]', 'alwls2488');
